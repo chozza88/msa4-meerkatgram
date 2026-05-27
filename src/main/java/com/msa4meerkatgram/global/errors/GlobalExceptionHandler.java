@@ -1,5 +1,6 @@
 package com.msa4meerkatgram.global.errors;
 
+import com.msa4meerkatgram.global.errors.custom.NotRegisteredException;
 import com.msa4meerkatgram.global.responses.GlobalRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,19 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(NotRegisteredException.class)
+    public ResponseEntity<GlobalRes<String>> notRegisteredHandle(NotRegisteredException e){
+        // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
+        return ResponseEntity.status(400).body(
+                GlobalRes.<String>builder()
+                        .code("E01")
+                        .message("로그인 에러")
+                        .data(e.getMessage())
+                        .build()
+        );
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<GlobalRes<String>> methodArgumentTypeMismatchHandle(MethodArgumentTypeMismatchException e){
         // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
