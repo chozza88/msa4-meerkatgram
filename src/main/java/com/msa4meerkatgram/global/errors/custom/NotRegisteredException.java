@@ -4,4 +4,5 @@ public class NotRegisteredException extends RuntimeException{ //커스텀 에러
     public NotRegisteredException(String message){
         super(message);
     }
+
 }

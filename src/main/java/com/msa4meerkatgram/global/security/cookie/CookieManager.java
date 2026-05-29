@@ -17,6 +17,14 @@ public class CookieManager {
 
     // Request Header에서 특정 쿠키를 획득(Optional 반환)
     // Optional에 값이 없으면 예외를 발생시켜 비정상 요청 처리
+
+    /**
+     * Request Header에서 특정 쿠키를 획득(Optional 반환)
+     * @param request 리퀘스트
+     * @param name 찾고자하는 쿠키명
+     * @return Optional<Cookie>
+     * @throws Exception
+     */
     public Optional<Cookie> getCookie(HttpServletRequest request, String name){
         // 쿠키 존재 여부 확인
         if(request.getCookies() == null){
@@ -28,6 +36,7 @@ public class CookieManager {
                 .filter(cookie -> cookie.getName().equals(name))
                 .findFirst();
     }
+
 
     // 쿠키 생성 메서드
     public void setCookie(HttpServletResponse response, String name, String value, int maxAge, String path){
