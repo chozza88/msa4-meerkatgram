@@ -5,10 +5,13 @@ import com.msa4meerkatgram.global.errors.custom.NotRegisteredException;
 import com.msa4meerkatgram.global.responses.GlobalRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,12 +19,30 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<GlobalRes<String>> authenticationHandle(AuthenticationException e){
+        return ResponseEntity.status(401).body(
+                GlobalRes.<String>builder()
+                        .code("E02")
+                        .message("UNAUTHENTICATED_ERROR")
+                        .data("로그인이 필요한 서비스입니다.")
+                        .build()
+        );
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<GlobalRes<String>> accessDeniedHandle(AccessDeniedException e){
+        return ResponseEntity.status(403).body(
+                GlobalRes.<String>builder()
+                        .code("E03")
+                        .message("UNAUTHORIZED_ERROR")
+                        .data("권한이 부족합니다.")
+                        .build()
+        );
+    }
 
     @ExceptionHandler(NotRegisteredException.class)
     public ResponseEntity<GlobalRes<String>> notRegisteredHandle(NotRegisteredException e){
-        // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
-        return ResponseEntity.status(400).body(
+        return ResponseEntity.status(401).body(
                 GlobalRes.<String>builder()
                         .code("E01")
                         .message("로그인 에러")
@@ -31,8 +52,7 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<GlobalRes<String>> invalidTokenHandle(InvalidTokenException e){
-        // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
-        return ResponseEntity.status(400).body(
+        return ResponseEntity.status(401).body(
                 GlobalRes.<String>builder()
                         .code("E04")
                         .message("토큰 이상")
@@ -43,7 +63,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<GlobalRes<String>> methodArgumentTypeMismatchHandle(MethodArgumentTypeMismatchException e){
-        // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
         return ResponseEntity.status(400).body(
                 GlobalRes.<String>builder()
                         .code("E21")
@@ -55,7 +74,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GlobalRes<List<String>>> methodArgumentNotValidExceptionHandle(MethodArgumentNotValidException e){
-        // 하나의 데이터만 클라이언트로 받아들일때 미스매칭을 확인
         return ResponseEntity.status(400).body(
                 GlobalRes.<List<String>>builder()
                         .code("E21")
