@@ -3,9 +3,13 @@ package com.msa4meerkatgram.domain.post.services;
 import com.msa4meerkatgram.domain.post.entities.Post;
 import com.msa4meerkatgram.domain.post.mapper.PostMapper;
 import com.msa4meerkatgram.domain.post.requests.PostIndexReq;
+import com.msa4meerkatgram.domain.post.requests.PostStoreReq;
 import com.msa4meerkatgram.domain.post.responses.PostIndexRes;
 import com.msa4meerkatgram.global.errors.custom.DeletedRecordException;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,5 +44,25 @@ public class PostService {
         }
 
         return post;
+    }
+
+    public void store(PostStoreReq postStoreReq){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Claims claims = (Claims) auth.getPrincipal();
+        long userId = Long.parseLong(claims.getSubject());
+        Post post = Post.builder()
+                .userId(userId)
+                .content(postStoreReq.content())
+                .image(postStoreReq.image())
+                .build();
+        postMapper.insert(post);
+    }
+
+    public void deletePost(long id){
+        long result = postMapper.deletePost(id);
+
+        if(result == 0){
+            throw new DeletedRecordException("삭제할 게시글이 존재하지 않습니다.");
+        }
     }
 }

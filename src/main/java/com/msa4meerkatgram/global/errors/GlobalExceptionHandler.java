@@ -3,6 +3,7 @@ package com.msa4meerkatgram.global.errors;
 import com.msa4meerkatgram.global.errors.custom.*;
 import com.msa4meerkatgram.global.responses.GlobalRes;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -138,7 +139,16 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
-    
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<GlobalRes<String>> dataAccessHandle(DataAccessException e){
+        return ResponseEntity.status(500).body(
+                GlobalRes.<String>builder()
+                        .code("E90")
+                        .message("데이터 저장 중 오류가 발생했습니다.")
+                        .build()
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<GlobalRes<String>> ordersHandle(Exception e){
         log.error("시스템 에러",e);
