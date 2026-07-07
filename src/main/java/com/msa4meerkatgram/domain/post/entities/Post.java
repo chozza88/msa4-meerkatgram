@@ -10,6 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "posts")
@@ -21,7 +23,7 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "BIGINT UNSIGNED")
-    private long id;
+    private Long id; // Long을 쓰는 이유는 null값을 전달할 수도 있기 때문에, null값을 담을 수 있도록 long이 아니라 Long을 쓴다.
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -41,12 +43,12 @@ public class Post {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "update_at", nullable = false)
-    private String updatedAt;
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at", nullable = true)
-    private String deletedAt;
+    private LocalDateTime deletedAt;
 }
